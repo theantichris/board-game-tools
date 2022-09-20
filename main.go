@@ -15,6 +15,7 @@ const dieFormatMessage = "Format: dx where x is a number. Default d6."
 func main() {
 	rand.Seed(time.Now().UTC().UnixNano())
 
+	number := flag.Int("n", 1, "The number of dice to roll. Default 1.")
 	dice := flag.String("d", "d6", "The type of die to roll. "+dieFormatMessage)
 	flag.Parse()
 
@@ -28,8 +29,10 @@ func main() {
 			log.Fatal(err)
 		}
 
-		roll := rand.Intn(d) + 1
-		fmt.Printf("You rolled a %d.\n", roll)
+		for i := 0; i < *number; i++ {
+			roll := rand.Intn(d) + 1
+			fmt.Printf("You rolled a %d.\n", roll)
+		}
 	} else {
 		log.Fatalln("Incorrect format for die. " + dieFormatMessage)
 	}
