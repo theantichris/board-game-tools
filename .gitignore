@@ -4,6 +4,7 @@
 *.dll
 *.so
 *.dylib
+board-game-tools
 
 # Test binary, built with `go test -c`
 *.test
