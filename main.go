@@ -13,27 +13,57 @@ import (
 const dieFormatMessage = "Format: dx where x is a number. Default d6."
 
 func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
-
-	number := flag.Int("n", 1, "The number of dice to roll. Default 1.")
-	dice := flag.String("d", "d6", "The type of die to roll. "+dieFormatMessage)
+	numberOfDice := flag.Int("n", 1, "The number of dice to roll. Default 1.")
+	diceSides := flag.String("d", "d6", "The type of die to roll. "+dieFormatMessage)
+	getSum := flag.Bool("s", false, "Get the sum of the dice rolls.")
 	flag.Parse()
 
-	matched, _ := regexp.Match("d\\d+", []byte(*dice))
+	matched, _ := regexp.Match("d\\d+", []byte(*diceSides))
 
 	if matched {
-		sides := (*dice)[1:]
+		rand.Seed(time.Now().UTC().UnixNano())
 
-		d, err := strconv.Atoi(sides)
-		if err != nil {
-			log.Fatal(err)
-		}
+		rolls := rollDice(numberOfDice, diceSides)
+		printRolls(rolls)
 
-		for i := 0; i < *number; i++ {
-			roll := rand.Intn(d) + 1
-			fmt.Printf("You rolled a %d.\n", roll)
+		if *getSum {
+			sum := addRolls(rolls)
+
+			fmt.Printf("The sum of the rolls is %d.\n", sum)
 		}
 	} else {
 		log.Fatalln("Incorrect format for die. " + dieFormatMessage)
 	}
+}
+
+func rollDice(numberOfDice *int, diceSides *string) []int {
+	sides := (*diceSides)[1:]
+	d, err := strconv.Atoi(sides)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	var rolls []int
+
+	for i := 0; i < *numberOfDice; i++ {
+		rolls = append(rolls, rand.Intn(d)+1)
+	}
+
+	return rolls
+}
+
+func printRolls(rolls []int) {
+	for i, roll := range rolls {
+		fmt.Printf("Roll %d was %d.\n", i+1, roll)
+	}
+}
+
+func addRolls(rolls []int) int {
+	sum := 0
+
+	for _, roll := range rolls {
+		sum += roll
+	}
+
+	return sum
 }
